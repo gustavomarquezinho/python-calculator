@@ -1,5 +1,5 @@
 class Calcs:
-    def __init__(self, operation: str):
+    def __init__(self, operation: str, testing: bool = False):
         self.solved = 0
 
         self.operators = (
@@ -12,6 +12,7 @@ class Calcs:
         if not self.is_valid_operation():
             raise Exception('Invalid operation')
 
+        self.testing = testing
         self.solve()
 
 
@@ -29,6 +30,9 @@ class Calcs:
 
 
     def is_valid_operation(self) -> bool:
+        if len(self.operation) == 0:
+            return False
+
         if self.operation[len(self.operation) - 1] in self.operators:
             return False
 
@@ -42,26 +46,39 @@ class Calcs:
         return True
 
 
-    def solve(self) -> float:
-        for operator in self.operators:
+    def get_operator(self) -> str:
+        for item in self.operation:
+            if item in self.operators[:3]:
+                return item
 
-            while operator in self.operation:
-                index = self.operation.index(operator)
-                
-                numbers = (
-                    self.get_number(index - 1),
-                    self.get_number(index)
-                )
-                
-                solved = self.choose_operator(operator, numbers)
+        for item in self.operation:
+            if item in self.operators[3:]:
+                return item
 
-                self.operation[self.operation.index(operator)] = str(solved)
-                self.solved += solved
+                
+    def solve(self) -> int or float:
+        while len(self.operation) > 1:
+            operator = self.get_operator()
+        
+            if not self.testing:
+                print(*self.operation)
+
+            index = self.operation.index(operator)
+            
+            numbers = (
+                self.get_near_number(index - 1),
+                self.get_near_number(index)
+            )
+            
+            solved = self.choose_operator(operator, numbers)
+            self.solved = solved
+
+            self.operation[index - 1] = str(solved)
 
         return self.solved
 
 
-    def get_number(self, index: int) -> float:
+    def get_near_number(self, index: int) -> float:
         number = self.operation[index]
         self.operation.pop(index)
         return float(number)
@@ -79,16 +96,12 @@ class Calcs:
                 return numbers[0] + numbers[1]
 
             case '-':
-                return -(numbers[0] - numbers[1])
+                return numbers[0] - numbers[1]
 
             case _:
                 raise Exception('Invalid operator')
 
 
 if __name__ == '__main__':
-    calcs = Calcs('12324 + 1246624 + 1 / 345 - 5 * 45')
-
-    # 12324 + 1246624 + 1 / 345 - 5 * 45
-    # 12324 + 1246624 + 1 / 345 - 225
-    # 12324 + 1246624 + 0.00289 - 225
-    # 1.259.012
+    calcs = Calcs('23434 / 345 - 23 + 23262 * 23 - 23425 - 256')
+    print(calcs.solved)
