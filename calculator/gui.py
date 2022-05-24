@@ -9,20 +9,20 @@ from tkinter.ttk import (
 from tkinter import Tk, PhotoImage
 
 
-chars = [
+chars = (
     '^', '(', ')', 'C',
     '7', '8', '9', '<',
     '4', '5', '6', 'x',
     '1', '2', '3', '-',
     '0', '.', '=', '+'
-]
+)
 
 
 class Gui(Tk):
     def __init__(self, title: str):
         super().__init__()
 
-        self.geometry('312x436')
+        self.center_window(312, 436)
         self.resizable(0, 0)
         self.title(title)
 
@@ -35,7 +35,14 @@ class Gui(Tk):
         self.iconphoto(False, PhotoImage(file='./calculator/assets/icon_small.png'))
 
 
-    def load_entry(self):
+    def center_window(self, size_x: int, size_y: int) -> None:
+        pos_x = (self.winfo_screenwidth() / 2) - (size_x / 2)
+        pos_y = (self.winfo_screenheight() / 2) - (size_y / 2)
+
+        self.geometry('{}x{}+{}+{}' .format(size_x, size_y, int(pos_x), int(pos_y)))
+
+
+    def load_entry(self) -> None:
         frame_entry = Frame(self).grid()
 
         self.entry = Entry(
@@ -47,7 +54,7 @@ class Gui(Tk):
         self.entry.grid(row=0, columnspan=4, padx=(18, 0), pady=(20, 5), ipady=8)
 
 
-    def load_buttons(self):
+    def load_buttons(self) -> None:
         frame_button, col, row = Frame(self).grid(), 0, 1
 
         for index, char in enumerate(chars):
@@ -76,11 +83,11 @@ class Gui(Tk):
             self.set_button_command(index)
         
 
-    def set_button_command(self, index):
+    def set_button_command(self, index) -> None:
         self.buttons[index]['command'] = lambda: self.on_button_clicked(chars[index])
 
 
-    def on_button_clicked(self, button):
+    def on_button_clicked(self, button) -> None:
         entry_length = len(self.entry.get())
 
         match button:
