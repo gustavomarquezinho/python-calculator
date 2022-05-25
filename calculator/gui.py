@@ -1,5 +1,4 @@
 import sv_ttk as sun_valley
-from calcs import Calcs
 
 from tkinter.ttk import (
     Frame,
@@ -11,11 +10,11 @@ from tkinter import Tk, PhotoImage
 
 
 chars = (
-    'C', '(', ')', '<',
-    '7', '8', '9', '÷',
+    '^', '(', ')', 'C',
+    '7', '8', '9', '<',
     '4', '5', '6', 'x',
     '1', '2', '3', '-',
-    '0', ',', '=', '+'
+    '0', '.', '=', '+'
 )
 
 
@@ -101,17 +100,7 @@ class Gui(Tk):
                     self.entry.delete(entry_length - 1)
 
             case '=':
-                calcs = Calcs(self.entry.get())
-
                 self.on_button_clicked('C')
-                self.entry.insert(0, calcs.get_formatted())
 
             case _:
                 self.entry.insert(entry_length, button)
-
-
-    def show_entry_message(self, message: str) -> None:
-        self.on_button_clicked('C')
-
-        self.entry.insert(0, message)
-        self.entry.select_range(0, len(message))
