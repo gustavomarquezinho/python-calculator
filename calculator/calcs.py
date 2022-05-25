@@ -1,9 +1,12 @@
+from multiprocessing.sharedctypes import Value
+
+
 class Calcs:
     def __init__(self, operation: str, testing: bool = False):
-        self.solved = 0
+        self.testing = testing
 
         self.operators = (
-            'x', '*', '/', '+', '-'
+            'x', '*', '÷', '/', ':', '+', '-'
         )
 
         self.operation = operation
@@ -12,7 +15,7 @@ class Calcs:
         if not self.is_valid_operation():
             raise Exception('Invalid operation')
 
-        self.testing = testing
+        self.solved = 0
         self.solve()
 
 
@@ -20,8 +23,11 @@ class Calcs:
         string = ''
 
         for index, char in enumerate(self.operation):
-            if char.isdigit() or (index == 0 and char in self.operators):
+            if char.isdigit() or (index == 0 and char == '-'):
                 string += char
+
+            elif char == ',':
+                string += '.'
 
             elif char in self.operators:
                 string += ' ' + char + ' '
@@ -48,11 +54,11 @@ class Calcs:
 
     def get_operator(self) -> str:
         for item in self.operation:
-            if item in self.operators[:3]:
+            if item in self.operators[:5]:
                 return item
 
         for item in self.operation:
-            if item in self.operators[3:]:
+            if item in self.operators[5:]:
                 return item
 
                 
@@ -75,7 +81,8 @@ class Calcs:
 
             self.operation[index - 1] = str(solved)
 
-        return self.solved
+        if not self.testing:
+            print(self.solved)
 
 
     def get_near_number(self, index: int) -> float:
@@ -86,10 +93,10 @@ class Calcs:
 
     def choose_operator(self, operator: str, numbers: tuple) -> float:
         match operator:
-            case '*' | 'x':
+            case 'x' | '*':
                 return numbers[0] * numbers[1]
 
-            case '/':
+            case '÷' | '/' | ':':
                 return numbers[0] / numbers[1]
 
             case '+':
@@ -101,7 +108,17 @@ class Calcs:
             case _:
                 raise Exception('Invalid operator')
 
+    
+    def get_formatted(self) -> str:
+        try:
+            if int(self.solved) == float(self.solved):
+                return str(int(self.solved))
+        except ValueError:
+            pass
+
+        return str(self.solved).replace('.', ',')
+
 
 if __name__ == '__main__':
-    calcs = Calcs('23434 / 345 - 23 + 23262 * 23 - 23425 - 256')
-    print(calcs.solved)
+    calcs = Calcs('23434 ÷ 345 - 23 + 23262 * 23 - 23425 - 256')
+    calcs = Calcs('1,123 * 2')
