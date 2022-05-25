@@ -3,8 +3,10 @@ class Calcs:
         self.testing = testing
 
         self.operators = (
-            'x', '*', '/', '+', '-'
+            'x', '*', '÷', '/', ':', '+', '-'
         )
+
+        self.final_priority = self.operators.index('+')
 
         self.operation = operation
         self.operation = self.filter()
@@ -51,11 +53,11 @@ class Calcs:
 
     def get_operator(self) -> str:
         for item in self.operation:
-            if item in self.operators[:3]:
+            if item in self.operators[:self.final_priority]:
                 return item
 
         for item in self.operation:
-            if item in self.operators[3:]:
+            if item in self.operators[self.final_priority:]:
                 return item
 
                 
@@ -78,7 +80,8 @@ class Calcs:
 
             self.operation[index - 1] = str(solved)
 
-        return self.solved
+        if not self.testing:
+            print(self.solved)
 
 
     def get_near_number(self, index: int) -> float:
@@ -90,10 +93,10 @@ class Calcs:
 
     def choose_operator(self, operator: str, numbers: tuple) -> float:
         match operator:
-            case '*' | 'x':
+            case 'x' | '*':
                 return numbers[0] * numbers[1]
 
-            case '/':
+            case '÷' | '/' | ':':
                 return numbers[0] / numbers[1]
 
             case '+':
