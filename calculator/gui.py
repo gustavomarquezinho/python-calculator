@@ -3,6 +3,7 @@ from calcs import Calcs
 
 from tkinter.ttk import (
     Frame,
+    Label,
     Entry,
     Button
 )
@@ -18,20 +19,23 @@ chars = (
     '0', ',', '=', '+'
 )
 
+columns = 4
+
 
 class Gui(Tk):
     def __init__(self, title: str):
         super().__init__()
 
-        self.center_window(312, 436)
+        self.center_window(312, 472)
         self.resizable(0, 0)
         self.title(title)
 
         sun_valley.set_theme('light')
         self.buttons = []
 
-        self.load_entry()
-        self.load_buttons()
+        self.create_preview()
+        self.create_entry()
+        self.create_buttons()
 
         self.iconphoto(False, PhotoImage(file='./calculator/assets/icon_small.png'))
 
@@ -43,26 +47,38 @@ class Gui(Tk):
         self.geometry('{}x{}+{}+{}' .format(size_x, size_y, int(pos_x), int(pos_y)))
 
 
-    def load_entry(self) -> None:
-        frame_entry = Frame(self).grid()
+    def create_preview(self) -> None:
+        self.preview = Label(master=self)
 
-        self.entry = Entry(
-            master=frame_entry,
-            justify='center',
-            width=37,
+        self.preview.grid(
+            column=0, row=0,
+            columnspan=columns,
+            padx=(0, 15),
+            pady=(10, 5),
+            sticky='e'
         )
 
-        self.entry.grid(row=0, columnspan=4, padx=(18, 0), pady=(20, 5), ipady=8)
+
+    def create_entry(self) -> None:
+        self.entry = Entry(master=self, justify='center', width=36)
+
+        self.entry.grid(
+            column=0, row=1,
+            columnspan=columns,
+            padx=(15, 0), 
+            pady=(0, 15),
+            ipady=10
+        )
 
 
-    def load_buttons(self) -> None:
-        frame_button, col, row = Frame(self).grid(), 0, 1
+    def create_buttons(self) -> None:
+        col, row = 0, 2
 
         for index, char in enumerate(chars):
             padx = (18, 2) if col == 0 else (2, 2)
  
             self.buttons.append(
-                Button(frame_button, text=char, width=6, style='my.TButton')
+                Button(master=self, text=char, width=6)
             )
 
             self.buttons[len(self.buttons) - 1].grid(
@@ -72,8 +88,8 @@ class Gui(Tk):
                 pady=2,
                 ipady=16
             )
-    
-            if (index + 1) % 4 != 0:
+
+            if (index + 1) % columns != 0:
                 col += 1
                 continue
 
@@ -82,7 +98,7 @@ class Gui(Tk):
 
         for index in range(len(self.buttons)):
             self.set_button_command(index)
-        
+
 
     def set_button_command(self, index) -> None:
         self.buttons[index]['command'] = lambda: self.on_button_clicked(chars[index])
@@ -96,15 +112,23 @@ class Gui(Tk):
                 if entry_length >= 1:
                     self.entry.delete(0, entry_length)
 
+                elif len(self.preview['text']) >= 1:
+                    self.preview['text'] = ''
+
             case '<':
                 if entry_length >= 1:
                     self.entry.delete(entry_length - 1)
 
             case '=':
                 calcs = Calcs(self.entry.get())
-
                 self.on_button_clicked('C')
+
+                if calcs.error is not None:
+                    self.preview['text'] = calcs.error
+                    return
+
                 self.entry.insert(0, calcs.get_formatted())
+                self.preview['text'] = calcs.operation_copy
 
             case _:
                 self.entry.insert(entry_length, button)

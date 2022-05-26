@@ -1,21 +1,25 @@
 class Calcs:
     def __init__(self, operation: str, testing: bool = False):
+        self.error = None
+
         self.testing = testing
+        self.solved = 0
 
         self.operators = (
             'x', '*', '÷', '/', ':', '+', '-'
         )
 
         self.final_priority = self.operators.index('+')
+        self.operation_copy = ''
 
         self.operation = operation
         self.operation = self.filter()
         
         if not self.is_valid_operation():
-            raise Exception('Invalid operation')
-
-        self.solved = 0
-        self.solve()
+            self.show_error('Operação inválida!')
+        else:
+            self.operation_copy = self.operation.copy()
+            self.solve()
 
 
     def filter(self) -> list:
@@ -97,7 +101,11 @@ class Calcs:
                 return numbers[0] * numbers[1]
 
             case '÷' | '/' | ':':
-                return numbers[0] / numbers[1]
+                try:
+                    return numbers[0] / numbers[1]
+                except ZeroDivisionError:
+                    self.show_error('Não é possível dividir por zero!')
+                    return 0.0
 
             case '+':
                 return numbers[0] + numbers[1]
@@ -105,11 +113,11 @@ class Calcs:
             case '-':
                 return numbers[0] - numbers[1]
 
-            case _:
-                raise Exception('Invalid operator')
-
 
     def get_formatted(self) -> str:
+        if self.error is not None:
+            return ''
+
         try:
             if int(self.solved) == float(self.solved):
                 return str(int(self.solved))
@@ -117,6 +125,11 @@ class Calcs:
             pass
 
         return str(self.solved).replace('.', ',')
+
+
+    def show_error(self, error: str) -> None:
+        self.error = error
+        print(error)
 
 
 if __name__ == '__main__':
