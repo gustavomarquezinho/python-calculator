@@ -2,7 +2,6 @@ import sv_ttk as sun_valley
 from calcs import Calcs
 
 from tkinter.ttk import (
-    Frame,
     Label,
     Entry,
     Button
@@ -69,6 +68,8 @@ class Gui(Tk):
             pady=(0, 15),
             ipady=10
         )
+
+        self.entry.bind('<Return>', lambda bind: self.on_button_clicked('='))
 
 
     def create_buttons(self) -> None:
