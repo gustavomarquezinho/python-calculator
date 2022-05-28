@@ -1,5 +1,5 @@
 import sv_ttk as sun_valley
-from calcs import Calcs
+from .calcs import Calcs
 
 from tkinter.ttk import (
     Label,

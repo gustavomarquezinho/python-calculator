@@ -1,4 +1,4 @@
-from gui import Gui
+from scripts.gui import Gui
 
 PROGRAM_NAME = 'Calculator (2505.22)'
 
