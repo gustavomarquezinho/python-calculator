@@ -36,7 +36,7 @@ class Gui(Tk):
         self.create_entry()
         self.create_buttons()
 
-        self.iconphoto(False, PhotoImage(file='./calculator/assets/icon_small.png'))
+        self.iconphoto(False, PhotoImage(file='./calculator/icon_small.png'))
 
 
     def center_window(self, size_x: int, size_y: int) -> None:
