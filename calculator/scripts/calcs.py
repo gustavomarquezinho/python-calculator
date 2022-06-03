@@ -1,3 +1,8 @@
+exponents = {
+    '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4',
+    '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9'
+}
+
 class Calcs:
     def __init__(self, operation: str, testing: bool = False):
         self.error = None
@@ -6,10 +11,10 @@ class Calcs:
         self.solved = 0
 
         self.operators = (
-            'x', '*', '÷', '/', ':', '+', '-'
+            'R', '^', 'x', '*', '÷', '/', ':', '+', '-'
         )
 
-        self.final_priority = self.operators.index('+')
+        self.final_priority = (self.operators.index('*'), self.operators.index('+'))
         self.operation_copy = ''
 
         self.operation = operation
@@ -26,8 +31,26 @@ class Calcs:
         string = ''
 
         for index, char in enumerate(self.operation):
-            if char.isdigit() or (index == 0 and char == '-'):
+            if char.isdigit() and char not in exponents.keys() or (index == 0 and char == '-'):
                 string += char
+
+            elif char == '√':
+                if index >= 1:
+                    finded = False
+
+                    for i in range(len(self.operation[:index - 1]), -1, -1):
+                        if self.operation[i] not in exponents.keys():
+                            break
+                        
+                        string += exponents[self.operation[i]]
+
+                        if not finded:
+                            finded = True
+                    
+                    if not finded:
+                        string += '2'
+
+                string += ' R '
 
             elif char == ',':
                 string += '.'
@@ -57,11 +80,15 @@ class Calcs:
 
     def get_operator(self) -> str:
         for item in self.operation:
-            if item in self.operators[:self.final_priority]:
+            if item in self.operators[:self.final_priority[0]]:
                 return item
 
         for item in self.operation:
-            if item in self.operators[self.final_priority:]:
+            if item in self.operators[self.final_priority[0]:self.final_priority[1]]:
+                return item
+
+        for item in self.operation:
+            if item in self.operators[self.final_priority[1]:]:
                 return item
 
                 
@@ -97,6 +124,12 @@ class Calcs:
 
     def choose_operator(self, operator: str, numbers: tuple) -> float:
         match operator:
+            case 'R':
+                return numbers[1] ** (1 / numbers[0])
+
+            case '^':
+                return numbers[0] ** numbers[1]
+
             case 'x' | '*':
                 return numbers[0] * numbers[1]
 
@@ -118,10 +151,12 @@ class Calcs:
         if self.error is not None:
             return ''
 
+        print(self.solved)
+
         try:
             if int(self.solved) == float(self.solved):
                 return str(int(self.solved))
-        except ValueError:
+        except (ValueError, TypeError):
             pass
 
         return str(self.solved).replace('.', ',')
