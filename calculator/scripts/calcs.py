@@ -31,25 +31,13 @@ class Calcs:
         string = ''
 
         for index, char in enumerate(self.operation):
-            if char.isdigit() and char not in exponents.keys() or (index == 0 and char == '-'):
+            if char in exponents.keys():
+                string += exponents[char]
+
+            elif char.isdigit() or (index == 0 and char == '-'):
                 string += char
 
             elif char == '√':
-                if index >= 1:
-                    finded = False
-
-                    for i in range(len(self.operation[:index - 1]), -1, -1):
-                        if self.operation[i] not in exponents.keys():
-                            break
-                        
-                        string += exponents[self.operation[i]]
-
-                        if not finded:
-                            finded = True
-                    
-                    if not finded:
-                        string += '2'
-
                 string += ' R '
 
             elif char == ',':
@@ -58,6 +46,7 @@ class Calcs:
             elif char in self.operators:
                 string += ' ' + char + ' '
 
+        print(string.split())
         return string.split()
 
 
