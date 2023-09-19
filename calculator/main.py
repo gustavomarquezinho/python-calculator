@@ -1,5 +1,8 @@
+from timeit import timeit
+
 from scripts.calcs import Calcs
 from scripts.gui import Gui
+
 
 PROGRAM_NAME = 'Calculator (2505.22)'
 
@@ -39,6 +42,26 @@ def results_tests():
             continue
 
         print(f'{index} - FAILED')
+
+
+
+
+def execution_tests():
+    fixed_time = timeit(
+        "Calcs('1', True)",
+        number=100_000,
+        globals=globals()
+    )
+
+    increase_1 = timeit(
+        "Calcs('1 / 1', True)",
+        number=100_000,
+        globals=globals()
+    ) - fixed_time
+
+
+    print(round(fixed_time, 4))
+    print(round(increase_1, 4))
 
 
 if __name__ == '__main__':
